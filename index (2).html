@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Презентация с Reveal.js</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/reveal.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/theme/black.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Ponomar&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Ponomar', serif;
+        }
+        .circle {
+            stroke: #fff;
+            stroke-width: 1.5px;
+            cursor: pointer;
+        }
+        .tooltip {
+            position: absolute;
+            text-align: center;
+            width: 200px;
+            padding: 10px;
+            font: 14px 'Ponomar', serif;
+            background: rgba(255, 255, 255, 0.9);
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            pointer-events: none;
+            box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+        }
+        .tooltip h3 {
+            margin: 0;
+            font-size: 18px;
+            font-weight: bold;
+        }
+        .tooltip p {
+            margin: 5px 0 0;
+            font-size: 12px;
+            color: #555;
+            line-height: 1.4;
+        }
+        .legend {
+            position: absolute;
+            top: 150px;
+            right: 80px;
+            background: none;
+            font: 39px 'Ponomar', serif;
+        }
+        .legend-item {
+            cursor: pointer;
+            margin-bottom: 5px;
+        }
+        .legend-item:hover {
+            text-decoration: underline;
+        }
+        .legend-item.inactive {
+            opacity: 0.3;
+        }
+    </style>
+</head>
+<body>
+    <div class="reveal">
+        <div class="slides">
+            <section>
+                <h1>Добро пожаловать!</h1>
+                <p>Это пример презентации с использованием Reveal.js.</p>
+            </section>
+            <section>
+                <h2>Интерактивная диаграмма</h2>
+                <svg width="800" height="600"></svg>
+                <div class="tooltip" style="opacity: 0;"></div>
+                <div class="legend"></div>
+            </section>
+            <section>
+                <h2>Заключение</h2>
+                <p>Спасибо за внимание!</p>
+            </section>
+        </div>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/reveal.min.js"></script>
+    <script src="https://d3js.org/d3.v6.min.js"></script>
+    <script>
+        Reveal.initialize();
+
+        const data = [
+            { "Персонаж": "Некий человек", "В скольких задачах встречается": 45, "Категория": "Прочее" },
+            { "Персонаж": "Купец", "В скольких задачах встречается": 12, "Категория": "Профессия" },
+            { "Персонаж": "Житопродавец", "В скольких задачах встречается": 2, "Категория": "Профессия" },
+            { "Персонаж": "Нищий", "В скольких задачах встречается": 2, "Категория": "Прочее" },
+            { "Персонаж": "Заимодавец", "В скольких задачах встречается": 3, "Категория": "Профессия" },
+            { "Персонаж": "Должник", "В скольких задачах встречается": 2, "Категория": "Профессия" },
+            { "Персонаж": "Эконом", "В скольких задачах встречается": 1, "Категория": "Профессия" },
+            { "Персонаж": "Солдат", "В скольких задачах встречается": 15, "Категория": "Профессия" },
+            { "Персонаж": "Полковник", "В скольких задачах встречается": 5, "Категория": "Профессия" },
+            { "Персонаж": "Жена", "В скольких задачах встречается": 2, "Категория": "Родство" },
+            { "Персонаж": "Сын", "В скольких задачах встречается": 1, "Категория": "Родство" },
+            { "Персонаж": "Дщерь", "В скольких задачах встречается": 1, "Категория": "Родство" },
+            { "Персонаж": "Путник", "В скольких задачах встречается": 1, "Категория": "Прочее" },
+            { "Персонаж": "Гость", "В скольких задачах встречается": 1, "Категория": "Профессия" },
+            { "Персонаж": "Приказчик", "В скольких задачах встречается": 1, "Категория": "Профессия" },
+            { "Персонаж": "Работник", "В скольких задачах встречается": 7, "Категория": "Профессия" },
+            { "Персонаж": "Извозчик", "В скольких задачах встречается": 1, "Категория": "Профессия" },
+            { "Персонаж": "Оловянщик", "В скольких задачах встречается": 1, "Категория": "Профессия" },
+            { "Персонаж": "Продавец", "В скольких задачах встречается": 1, "Категория": "Профессия" },
+            { "Персонаж": "Христианин", "В скольких задачах встречается": 3, "Категория": "Вероисповедание" },
+            { "Персонаж": "Турок", "В скольких задачах встречается": 3, "Категория": "Вероисповедание" },
+            { "Персонаж": "Еврей", "В скольких задачах встречается": 3, "Категория": "Вероисповедание" },
+            { "Персонаж": "Домовитый господин", "В скольких задачах встречается": 1, "Категория": "Прочее" },
+            { "Персонаж": "Колодезник", "В скольких задачах встречается": 2, "Категория": "Профессия" },
+            { "Персонаж": "Великий господин", "В скольких задачах встречается": 3, "Категория": "Прочее" },
+            { "Персонаж": "Генерал", "В скольких задачах встречается": 5, "Категория": "Профессия" },
+            { "Персонаж": "Градостроитель", "В скольких задачах встречается": 1, "Категория": "Профессия" },
+            { "Персонаж": "Землекопатель", "В скольких задачах встречается": 1, "Категория": "Профессия" },
+            { "Персонаж": "Каменщик", "В скольких задачах встречается": 1, "Категория": "Профессия" },
+            { "Персонаж": "Превысокий господин", "В скольких задачах встречается": 1, "Категория": "Прочее" },
+            { "Персонаж": "Винопродавец", "В скольких задачах встречается": 1, "Категория": "Профессия" },
+            { "Персонаж": "Учитель", "В скольких задачах встречается": 1, "Категория": "Профессия" },
+            { "Персонаж": "Ученик", "В скольких задачах встречается": 1, "Категория": "Прочее" },
+            { "Персонаж": "Муж благоговеен", "В скольких задачах встречается": 1, "Категория": "Прочее" },
+            { "Персонаж": "Кумпанство", "В скольких задачах встречается": 1, "Категория": "Прочее" },
+            { "Персонаж": "Домовый господин", "В скольких задачах встречается": 1, "Категория": "Прочее" }
+        ];
+
+        const svg = d3.select("svg");
+        const width = +svg.attr("width");
+        const height = +svg.attr("height");
+
+        const tooltip = d3.select(".tooltip");
+
+        const colorScale = d3.scaleOrdinal()
+            .domain(["Профессия", "Родство", "Вероисповедание", "Прочее"])
+            .range(["#1E3A8A", "#D4AF37", "#800020", "#F5DEB3"]);
+
+        const legend = d3.select(".legend");
+        const categoriesList = ["Профессия", "Родство", "Вероисповедание", "Прочее"];
+        let selectedCategory = null;
+
+        const legendItems = legend.selectAll(".legend-item")
+            .data(categoriesList)
+            .enter()
+            .append("div")
+            .attr("class", "legend-item")
+            .style("color", d => colorScale(d))
+            .text(d => d)
+            .on("click", function(event, category) {
+                if (selectedCategory === category) {
+                    selectedCategory = null;
+                } else {
+                    selectedCategory = category;
+                }
+
+                legendItems.classed("inactive", d => selectedCategory !== null && d !== selectedCategory);
+
+                const filteredData = selectedCategory
+                    ? data.filter(d => d.Категория === selectedCategory)
+                    : data;
+
+                updateChart(filteredData);
+            });
+
+        function updateChart(data) {
+            svg.selectAll("circle").remove();
+            svg.selectAll("image").remove();
+
+            const root = d3.hierarchy({ children: data })
+                .sum(d => d["В скольких задачах встречается"]);
+
+            const pack = d3.pack()
+                .size([width, height])
+                .padding(1.5);
+
+            pack(root);
+
+            const nodes = svg.selectAll("circle")
+                .data(root.leaves())
+                .enter()
+                .append("circle")
+                .attr("class", "circle")
+                .attr("cx", d => d.x)
+                .attr("cy", d => d.y)
+                .attr("r", d => d.r)
+                .attr("fill", d => colorScale(d.data.Категория))
+                .on("mouseover", function(event, d) {
+                    tooltip.transition()
+                        .duration(200)
+                        .style("opacity", .9);
+                    tooltip.html(d.data.Персонаж + "<br/>" + d.data["В скольких задачах встречается"] + " задач")
+                        .style("left", (event.pageX + 5) + "px")
+                        .style("top", (event.pageY - 28) + "px");
+                })
+                .on("mouseout", function(d) {
+                    tooltip.transition()
+                        .duration(500)
+                        .style("opacity", 0);
+                });
+
+            const images = svg.selectAll("image")
+                .data(root.leaves())
+                .enter()
+                .append("image")
+                .attr("class", "animal-image")
+                .attr("xlink:href", "https://sun9-59.userapi.com/impg/7UiW1Aq5HOUoRnDr5qohD5HT2DdbMl_1nX4BdQ/CJ4SLUgRs8M.jpg?size=604x552&quality=95&sign=db75f49b4e55b608837bab21487c275c&type=album")
+                .attr("x", d => d.x - d.r / 2)
+                .attr("y", d => d.y - d.r / 2)
+                .attr("width", d => d.r)
+                .attr("height", d => d.r);
+        }
+
+        updateChart(data);
+    </script>
+</body>
+</html>
